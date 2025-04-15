@@ -24,7 +24,7 @@ MakeFacingRotationIgnorePitch<public>(InBase:vector3, InTarget:vector3)<decides>
 
 # GetTransform()関数はcomputes内で使えないためタプルをはさむ。
 SortByHeight<public>(X:tuple(positional, vector3), Y:tuple(positional, vector3))<decides><computes>:void=
-    X(1).Z > Y(1).Z
+    X(1).Z < Y(1).Z
 
 PositionalSortByHeight<public>(InPositionals:[]t where t:subtype(positional)):[]t=
     PositionalTuples := 
