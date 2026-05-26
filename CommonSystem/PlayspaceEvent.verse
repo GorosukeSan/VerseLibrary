@@ -8,9 +8,9 @@ has_playspace_event<public> := interface:
     OnJoin<public>(Player:player):void = {}
     OnLeave<public>(Player:player):void = {}
 
-(Component:component).SubscribePlayspace<public>(Target:has_playspace_event):void=
+(Entity:entity).SubscribePlayspace<public>(Target:has_playspace_event):void=
     if:
-        FortPlayspace := Component.Entity.GetPlayspaceForEntity[]
+        FortPlayspace := Entity.GetPlayspaceForEntity[]
     then:
         for:
             PlayerElement : FortPlayspace.GetPlayers()

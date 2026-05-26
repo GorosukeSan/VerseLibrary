@@ -6,10 +6,10 @@ has_fort_round_manager<public> := interface:
     OnRoundStarted<public>()<suspends>:void = {}
     OnRoundEnded<public>():void = {}
 
-(Component:component).SubscribeRoundStarted<public>(Target:has_fort_round_manager):void=
+(Entity:entity).SubscribeRoundStarted<public>(Target:has_fort_round_manager):void=
     if:
-        FortRoundManager := Component.Entity.GetFortRoundManager[]
+        FortRoundManager := Entity.GetFortRoundManager[]
     then:
-        FortRoundManager.SubscribeRoundStarted(Target.OnRoundEnded)
+        FortRoundManager.SubscribeRoundStarted(Target.OnRoundStarted)
         FortRoundManager.SubscribeRoundEnded(Target.OnRoundEnded)
         

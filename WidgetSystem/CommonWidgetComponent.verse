@@ -2,8 +2,12 @@ using { /Verse.org/SceneGraph }
 using { /Verse.org/Simulation }
 
 using { CommonSystem }
+using { TreeSystem }
 
-common_widget_component<public> := class<final_super><abstract>(component):
+widget_event<public> := class<abstract>(scene_event):
+    
+
+common_widget_component<public> := class<final_super><abstract>(tree_element_component):
 
     var<private> WidgetPerPlayer<public>:[player]displayable_widget_base = map{}
 
@@ -21,3 +25,21 @@ common_widget_component<public> := class<final_super><abstract>(component):
         then:
             TargetWidget.Hide()
             set WidgetPerPlayer = WidgetPerPlayer.RemoveKey(Player)
+
+    GetWidgetTask<public><final>(Player:player)<decides><transacts>:common_widget_task=
+        TargetWidget := WidgetPerPlayer[Player]
+        TargetWidget.GetTask()
+
+    AddTask<public><final>(Player:player, Task:type{_(:player, :displayable_widget_base)<suspends>:void}):result(void, void)=
+        if(WidgetTask := GetWidgetTask[Player]):
+            WidgetTask.AddTask(Task)
+            MakeSuccess()
+        else:
+            MakeError()
+
+    AddCloseProcess<public><final>(Player:player, Task:type{_(:player, :displayable_widget_base):void}):result(void, void)=
+        if(WidgetTask := GetWidgetTask[Player]):
+            WidgetTask.AddCloseProcess(Task)
+            MakeSuccess()
+        else:
+            MakeError()

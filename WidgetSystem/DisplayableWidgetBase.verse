@@ -6,6 +6,9 @@ displayable_widget_base<public> := class<abstract>(common_widget_base):
     Player<public>:player
 
     var<private> WidgetInstance<public>:?widget = false
+    var<private> TaskInstance<public>:?common_widget_task = false
+
+    HideUIEvent<public>:event() = event(){}
 
     Show<override><final>():void=
         if:
@@ -22,6 +25,22 @@ displayable_widget_base<public> := class<abstract>(common_widget_base):
         then:
             PlayerUI.RemoveWidget(TargetWidget)
             set WidgetInstance = false
+
+            HideUIEvent.Signal()
+            if(TargetTask := TaskInstance?):
+                TargetTask.CallCloseProcess()
+            set TaskInstance = false
+
+    GetTask<public><final>()<transacts>:common_widget_task=
+        if(TargetTask := TaskInstance?):
+            TargetTask
+        else:
+            NewTask := common_widget_task:
+                Player := Player
+                Widget := Self
+                CloseEvent := HideUIEvent
+            set TaskInstance = option{NewTask}
+            NewTask
 
     InputMode<protected>()<reads>:ui_input_mode
 
