@@ -9,7 +9,4 @@ using { /Fortnite.com/Characters }
     IconComponent := CharacterEntity.GetComponent[icon_component]
     IconComponent.Icon
 
-(Agent:agent).GetSafeIcon<public>()<transacts>:texture=
-    Agent.GetIcon[] or VerseLibrary.Assets.T_Default
-
 GetName<public><localizes>(Agent:agent):message="{Agent}"

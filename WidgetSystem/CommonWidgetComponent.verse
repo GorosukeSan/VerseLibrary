@@ -5,19 +5,27 @@ using { CommonSystem }
 using { TreeSystem }
 
 widget_event<public> := class<abstract>(scene_event):
+    Player<public>:player
+widget_show_event<public> := class<final>(widget_event):
+widget_hide_event<public> := class<final>(widget_event):
     
-
 common_widget_component<public> := class<final_super><abstract>(tree_element_component):
 
     var<private> WidgetPerPlayer<public>:[player]displayable_widget_base = map{}
 
-    CreateWidget<protected>(Player:player):displayable_widget_base
+    CreateWidget<protected>(Player:player):result(displayable_widget_base, void)
 
     ShowUI<public><final>(Player:player):void=
         if(not WidgetPerPlayer[Player]):
-            NewWidget := CreateWidget(Player)
-            if(set WidgetPerPlayer[Player] = NewWidget):
+            CreateWidgetResult := CreateWidget(Player)
+            if:
+                NewWidget := CreateWidgetResult.GetSuccess[]
+                set WidgetPerPlayer[Player] = NewWidget
+            then:
                 NewWidget.Show()
+
+                Task := NewWidget.GetTask()
+                Task.AddTasks(InitialTasks())
 
     HideUI<public><final>(Player:player):void=
         if:
@@ -25,6 +33,9 @@ common_widget_component<public> := class<final_super><abstract>(tree_element_com
         then:
             TargetWidget.Hide()
             set WidgetPerPlayer = WidgetPerPlayer.RemoveKey(Player)
+
+    InitialTasks<protected>():[]common_task_function=
+        array{}
 
     GetWidgetTask<public><final>(Player:player)<decides><transacts>:common_widget_task=
         TargetWidget := WidgetPerPlayer[Player]
@@ -43,3 +54,16 @@ common_widget_component<public> := class<final_super><abstract>(tree_element_com
             MakeSuccess()
         else:
             MakeError()
+
+    OnReceive<override>(SceneEvent:scene_event):logic=
+        if:
+            WidgetEvent := widget_event[SceneEvent]
+        then:
+            if(ShowEvent := widget_show_event[SceneEvent]):
+                ShowUI(ShowEvent.Player)
+            else if(HideEvent := widget_hide_event[SceneEvent]):
+                HideUI(HideEvent.Player)
+
+            false
+        else:
+            true
