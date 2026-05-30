@@ -1,32 +1,39 @@
 using { /Verse.org/Simulation }
 using { /Verse.org/Random }
+using { /Verse.org/SceneGraph }
 
-subsequence_select_mode<public> := enum<open>:
-    Random
-
-sequence_result<public> := class<castable><abstract>:
-sequence_play_next_result<public> := class<castable>(sequence_result):
-sequence_stop_result<public> := class<castable>(sequence_result):
-sequence_reset_result<public> := class<castable>(sequence_result):
+game_sequence_event<public> := class<abstract>(scene_event):
+game_sequence_play_event<public> := class(game_sequence_event):
+    SequenceType<public>:castable_subtype(game_sequence_component)
 
 game_sequence_component<public> := class<final_super><abstract><castable>(game_element_component):
-    @editable
-    SelectMode<public>:subsequence_select_mode = subsequence_select_mode.Random
 
     Play<public><final>()<suspends>:void=
-        SequenceResult := Sequence()
+        Sequence()
+        # if(NextSequence := FindNextSequence[]):
+        #     spawn:
+        #         NextSequence.Play()
 
-    Sequence<protected>()<suspends>:sequence_result
+    Sequence<protected>()<suspends>:void
+    NextSequenceType<protected>()<decides><reads>:castable_subtype(game_sequence_component)
 
-    GetNextSequence<public><final>()<decides><transacts>:game_sequence_component=
-        Subsequence := GetSubsequence()
-        case(SelectMode):
-            subsequence_select_mode.Random =>
-                Shuffle(Subsequence)[0]
+    FindNextSequence<private>()<decides><transacts>:game_sequence_component=
+        ParentEntity := Entity.GetParent[]
+        next_sequence_type := NextSequenceType[]
+        Result := 
+            for:
+                Component : ParentEntity.FindDescendantComponents(next_sequence_type)
+            do:
+                Component
+        Result[0]
 
-    GetSubsequence<protected><final>()<transacts>:[]game_sequence_component=
-        for:
-            EntityElement : Entity.GetEntities()
-            SequenceComponent := EntityElement.GetComponent[game_sequence_component]
-        do:
-            SequenceComponent
+    OnReceive<override>(SceneEvent:scene_event):logic=
+        if:
+            SequenceEvent := game_sequence_play_event[SceneEvent]
+            SequenceEvent.SequenceType[Self]
+        then:
+            spawn{Play()}
+
+            return false
+
+        return true
