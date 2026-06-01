@@ -64,6 +64,6 @@ common_widget_component<public> := class<final_super><abstract>(tree_element_com
             else if(HideEvent := widget_hide_event[SceneEvent]):
                 HideUI(HideEvent.Player)
 
-            false
-        else:
             true
+        else:
+            false

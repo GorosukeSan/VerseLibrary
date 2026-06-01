@@ -10,9 +10,9 @@ game_sequence_component<public> := class<final_super><abstract><castable>(game_e
 
     Play<public><final>()<suspends>:void=
         Sequence()
-        # if(NextSequence := FindNextSequence[]):
-        #     spawn:
-        #         NextSequence.Play()
+        if(NextSequence := FindNextSequence[]):
+            spawn:
+                NextSequence.Play()
 
     Sequence<protected>()<suspends>:void
     NextSequenceType<protected>()<decides><reads>:castable_subtype(game_sequence_component)
@@ -33,7 +33,5 @@ game_sequence_component<public> := class<final_super><abstract><castable>(game_e
             SequenceEvent.SequenceType[Self]
         then:
             spawn{Play()}
-
-            return false
-
-        return true
+            return true
+        return false
