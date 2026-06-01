@@ -8,12 +8,18 @@ widget_event<public> := class<abstract>(scene_event):
     Player<public>:player
 widget_show_event<public> := class<final>(widget_event):
 widget_hide_event<public> := class<final>(widget_event):
+
+widget_called_show_event<public> := class<final>(widget_event):
+widget_called_hide_event<public> := class<final>(widget_event):
     
 common_widget_component<public> := class<final_super><abstract>(tree_element_component):
 
     var<private> WidgetPerPlayer<public>:[player]displayable_widget_base = map{}
 
     CreateWidget<protected>(Player:player):result(displayable_widget_base, void)
+
+    GetWidgetAs<public>(Player:player, widget_type:subtype(displayable_widget_base))<decides><transacts>:widget_type=
+        widget_type[WidgetPerPlayer[Player]]
 
     ShowUI<public><final>(Player:player):void=
         if(not WidgetPerPlayer[Player]):
@@ -27,12 +33,16 @@ common_widget_component<public> := class<final_super><abstract>(tree_element_com
                 Task := NewWidget.GetTask()
                 Task.AddTasks(InitialTasks())
 
+                Entity.SendUp(widget_called_show_event{Player := Player})
+
     HideUI<public><final>(Player:player):void=
         if:
             TargetWidget := WidgetPerPlayer[Player]
         then:
             TargetWidget.Hide()
             set WidgetPerPlayer = WidgetPerPlayer.RemoveKey(Player)
+
+            Entity.SendUp(widget_called_hide_event{Player := Player})
 
     InitialTasks<protected>():[]common_task_function=
         array{}
@@ -64,6 +74,4 @@ common_widget_component<public> := class<final_super><abstract>(tree_element_com
             else if(HideEvent := widget_hide_event[SceneEvent]):
                 HideUI(HideEvent.Player)
 
-            true
-        else:
-            false
+        false

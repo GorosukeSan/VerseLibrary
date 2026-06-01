@@ -13,7 +13,7 @@ player_removed_event<public> := class(player_event):
 player_manager_component<public> := class<final_super><abstract>(manager_component, has_fort_round_manager, has_playspace_event):
 
     OnBeginSimulation<override>():void=
-        Entity.SubscribePlayspace(Self)
+        Entity.SubscribeRoundManager(Self)
 
     OnRoundStarted<override>():void=
         Entity.SubscribePlayspace(Self)

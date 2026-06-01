@@ -1,14 +1,19 @@
 using { /UnrealEngine.com/Temporary/UI }
 using { /Verse.org/Simulation }
+using { /Verse.org/SceneGraph }
 
 displayable_widget_base<public> := class<abstract>(common_widget_base):
 
     Player<public>:player
+    Parent<public>:component
 
     var<private> WidgetInstance<public>:?widget = false
     var<private> TaskInstance<public>:?common_widget_task = false
 
     HideUIEvent<public>:event() = event(){}
+    
+    InitializeWidget<protected>():void=
+        return
 
     Show<override><final>():void=
         if:
@@ -17,6 +22,8 @@ displayable_widget_base<public> := class<abstract>(common_widget_base):
             NewWidget := CreateWidget()
             PlayerUI.AddWidget(NewWidget, player_ui_slot{InputMode := InputMode()})
             set WidgetInstance = option{NewWidget}
+
+            InitializeWidget()
 
     Hide<override><final>():void=
         if:
@@ -30,6 +37,12 @@ displayable_widget_base<public> := class<abstract>(common_widget_base):
             if(TargetTask := TaskInstance?):
                 TargetTask.CallCloseProcess()
             set TaskInstance = false
+
+    SetFocus<public><final>(Target:widget):void=
+        if:
+            PlayerUI := GetPlayerUI[Player]
+        then:
+            PlayerUI.SetFocus(Target)
 
     GetTask<public><final>()<transacts>:common_widget_task=
         if(TargetTask := TaskInstance?):

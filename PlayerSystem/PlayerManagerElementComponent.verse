@@ -11,7 +11,7 @@ player_manager_element_component<public> := class<final_super><abstract>(manager
     OnLeave<protected>(Player:player):void=
         return
 
-    OnReceive<override>(SceneEvent:scene_event):logic=
+    OnReceive<override><final>(SceneEvent:scene_event):logic=
         if:
             PlayerAddedEvent := player_added_event[SceneEvent]
         then:

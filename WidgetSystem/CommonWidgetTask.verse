@@ -1,11 +1,11 @@
 using { /Verse.org/Simulation }
 using { /Fortnite.com/Characters }
 
-common_task_function<public> := class<castable><abstract><internal>:
+common_task_function<public> := class<abstract><internal>:
 
-common_task_runnable_function<public> := class<castable><final>(common_task_function):
+common_task_runnable_function<public> := class<final>(common_task_function):
     Task<public>:type{_(:player, :displayable_widget_base)<suspends>:void}
-common_task_close_function<public> := class<castable><final>(common_task_function):
+common_task_close_function<public> := class<final>(common_task_function):
     Task<public>:type{_(:player, :displayable_widget_base):void}
 
 common_widget_task<public> := class<final>:
